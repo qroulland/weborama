@@ -1,28 +1,39 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+    <v-form @search="searchProfil($event)" />
+    <v-profil :profil="profil" />
+    <div v-if="error" class="error" v-html="error.message" />
+  </div> 
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Form from './components/Form.vue'
+import Profil from './components/Profil.vue'
+import { getProfil } from './service/index'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    'v-form': Form,
+    'v-profil': Profil
+  },
+  data() {
+    return {
+      profil: {},
+      error: null
+    }
+  },
+  methods: {
+    async searchProfil(profil) {
+      const data = await getProfil(profil)
+
+      if (typeof data === 'string') {
+        this.error = JSON.parse(data)
+        this.profil = {}
+      } else {
+        this.profil = data
+      }
+    }
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
